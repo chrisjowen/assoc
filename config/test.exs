@@ -9,12 +9,3 @@ config :assoc, AssocWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
-# Configure your database
-config :assoc, Assoc.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "test",
-  port: 5433,
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
