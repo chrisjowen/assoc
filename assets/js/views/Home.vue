@@ -30,19 +30,24 @@
         <md-table-row>
           <md-table-head>Theme</md-table-head>
           <md-table-head>Related Words</md-table-head>
-          <md-table-head>Remove  </md-table-head>
+          <md-table-head>Remove</md-table-head>
+          <md-table-head>Download</md-table-head>
         </md-table-row>
 
-         <md-table-row v-for="theme in loading" :key="theme" class="animated fadeIn">
+        <md-table-row v-for="theme in loading" :key="theme" class="animated fadeIn">
           <md-table-cell>{{theme}}</md-table-cell>
-          <md-table-cell col-span="2"> Loading ......</md-table-cell>
+          <md-table-cell col-span="2">Loading ......</md-table-cell>
         </md-table-row>
-
 
         <md-table-row v-for="theme in themes" :key="theme.word" class="animated fadeIn">
           <md-table-cell>{{theme.word}}</md-table-cell>
           <md-table-cell>{{theme.words.length}}</md-table-cell>
-        <md-table-cell>  <md-button class="md-accent md-raised" @click="remove(theme.word)">Remove</md-button></md-table-cell>
+          <md-table-cell>
+            <md-button class="md-accent md-raised" @click="remove(theme.word)">Remove</md-button>
+          </md-table-cell>
+          <md-table-cell>
+            <md-button class="md-primary md-raised" @click="downloadOne(theme)">Download</md-button>
+          </md-table-cell>
         </md-table-row>
       </md-table>
     </div>
@@ -71,12 +76,12 @@ export default {
     },
     loadTheme(theme) {
       let self = this;
-      this.loading.push(theme)
+      this.loading.push(theme);
       axios
         .post("/api/themes", { theme: theme })
         .then(function(response) {
           self.themes.unshift({ word: theme, words: response.data });
-          self.loading =  self.loading.filter(l => l!=theme)
+          self.loading = self.loading.filter(l => l != theme);
         })
         .catch(function(error) {
           console.log(error);
@@ -84,21 +89,32 @@ export default {
     },
     remove(theme) {
       let self = this;
-       axios
+      axios
         .delete(`/api/themes/${theme}`)
         .then(function(response) {
-          self.themes =  self.themes.filter(t => t.word!=theme)
+          self.themes = self.themes.filter(t => t.word != theme);
         })
         .catch(function(error) {
           console.log(error);
         });
     },
+    fileContent(theme) {
+      return [theme.word]
+        .concat(theme.words.map(t => t.toLowerCase()))
+        .join("\r\n");
+    },
     download() {
       let zip = new JSZip();
-      this.themes.forEach(t => zip.file(`${t.word}.txt`, t.words.join("\n")));
+      this.themes.forEach(t =>
+        zip.file(`${t.word}.txt`, this.fileContent(t))
+      );
       zip.generateAsync({ type: "blob" }).then(function(content) {
         saveAs(content, "themes.zip");
       });
+    },
+    downloadOne(theme) {
+      var blob = new Blob([this.fileContent(theme)], { type: "text/plain;charset=utf-8" });
+      saveAs(blob, `${theme.word}.txt`);
     }
   },
   mounted() {
