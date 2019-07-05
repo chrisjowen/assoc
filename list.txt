@@ -1,0 +1,8 @@
+fishing
+camping
+fox
+rat
+chicken
+cat
+owl
+monster

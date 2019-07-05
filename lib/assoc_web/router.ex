@@ -22,6 +22,8 @@ defmodule AssocWeb.Router do
   # Other scopes may use custom stacks.
   scope "/api", AssocWeb do
     get "/themes", ThemeController, :index
+    post "/themes/clear", ThemeController, :clear
+    post "/themes/multi", ThemeController, :multi
     post "/themes", ThemeController, :add
     delete "/themes/:theme", ThemeController, :delete
 

@@ -9,11 +9,15 @@
     </md-toolbar>
 
     <div class="box">
-      <span class="box-label">Add Theme</span>
-      <md-field>
-        <label>New Theme</label>
-        <md-input v-model="word" @keyup.enter.native="enterClicked()"></md-input>
+      <span class="box-label">Add Themes</span>
+      <md-field class="box">
+        <label>One Per Line</label>
+        <md-textarea v-model="word"></md-textarea>
       </md-field>
+
+      <div class="centered">
+        <md-button class="md-primary md-raised" @click="enterClicked()">Submit</md-button>
+      </div>
     </div>
 
     <div class="words box">
@@ -21,6 +25,7 @@
 
       <div class="box centered">
         <md-button class="md-primary md-raised" @click="download()">Download All</md-button>
+        <md-button class="md-primary md-accent md-raised" @click="deleteAll()">Remove All</md-button>
       </div>
       <md-table>
         <md-table-toolbar>
@@ -58,10 +63,13 @@
 import _ from "lodash";
 import axios from "axios";
 import JSZip from "jszip";
+import FileUpload from "./components/FileUpload.vue";
 import { saveAs } from "file-saver";
 
 export default {
-  components: {},
+  components: {
+    FileUpload
+  },
   data() {
     return {
       word: null,
@@ -71,7 +79,7 @@ export default {
   },
   methods: {
     enterClicked() {
-      this.loadTheme(this.word);
+      this.word.split("\n").forEach(this.loadTheme);
       this.word = null;
     },
     loadTheme(theme) {
@@ -85,6 +93,23 @@ export default {
         })
         .catch(function(error) {
           console.log(error);
+        });
+    },
+    addMultipule(files) {
+      return Promise.all(files.map(file => this.onSaveFile(file)));
+    },
+    onSaveFile(file) {
+      let self = this;
+      let formData = new FormData();
+      formData.append("file", file);
+      return axios
+        .post(`/api/themes/multi`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(r => {
+          self.getThemes();
         });
     },
     remove(theme) {
@@ -105,30 +130,41 @@ export default {
     },
     download() {
       let zip = new JSZip();
-      this.themes.forEach(t =>
-        zip.file(`${t.word}.txt`, this.fileContent(t))
-      );
+      this.themes.forEach(t => zip.file(`${t.word}.txt`, this.fileContent(t)));
       zip.generateAsync({ type: "blob" }).then(function(content) {
         saveAs(content, "themes.zip");
       });
     },
+    deleteAll() {
+      let self = this;
+
+      axios.post("/api/themes/clear").then(function(response) {
+        self.getThemes();
+      });
+    },
     downloadOne(theme) {
-      var blob = new Blob([this.fileContent(theme)], { type: "text/plain;charset=utf-8" });
+      var blob = new Blob([this.fileContent(theme)], {
+        type: "text/plain;charset=utf-8"
+      });
       saveAs(blob, `${theme.word}.txt`);
+    },
+    getThemes() {
+      let self = this;
+      axios
+        .get("/api/themes")
+        .then(function(response) {
+          self.themes = Object.keys(response.data).map(r => {
+            return { word: r, words: response.data[r] };
+          });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     }
   },
+
   mounted() {
-    let self = this;
-    axios
-      .get("/api/themes")
-      .then(function(response) {
-        self.themes = Object.keys(response.data).map(r => {
-          return { word: r, words: response.data[r] };
-        });
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    this.getThemes();
   }
 };
 </script>

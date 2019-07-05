@@ -24,4 +24,8 @@ defmodule Themes do
         Map.delete(themes, theme)
       end)
     end
+
+    def clear() do
+      Agent.update(__MODULE__, fn _themes -> %{} end)
+    end
   end

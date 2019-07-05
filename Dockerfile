@@ -1,4 +1,4 @@
-FROM artifactory.global.standardchartered.com/elixir:1.5
+FROM elixir:1.5
 
 # Compile elixir files for production
 # ENV MIX_ENV prod

@@ -13,7 +13,11 @@ defmodule WordAssocClient do
   end
 
   def process_response_body(body) do
-    body
-    |> Poison.decode!
+    try do
+      Poison.decode!(body)
+    rescue
+      _ -> body
+    end
+
   end
 end

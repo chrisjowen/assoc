@@ -1,7 +1,7 @@
 {application,phoenix,
-             [{applications,[kernel,stdlib,elixir,logger,eex,crypto,telemetry,
-                             phoenix_pubsub,plug]},
-              {description,"Productive. Reliable. Fast. A productive web framework that\ndoes not compromise speed or maintainability.\n"},
+             [{applications,[kernel,stdlib,elixir,plug,poison,logger,eex,
+                             phoenix_pubsub,crypto]},
+              {description,"Productive. Reliable. Fast. A productive web framework that\ndoes not compromise speed and maintainability.\n"},
               {modules,['Elixir.Mix.Phoenix','Elixir.Mix.Phoenix.Context',
                         'Elixir.Mix.Phoenix.Schema',
                         'Elixir.Mix.Tasks.Compile.Phoenix',
@@ -84,7 +84,7 @@
                         'Elixir.Phoenix.Transports.WebSocketSerializer',
                         'Elixir.Phoenix.View']},
               {registered,[]},
-              {vsn,"1.4.8"},
+              {vsn,"1.3.4"},
               {mod,{'Elixir.Phoenix',[]}},
               {env,[{stacktrace_depth,nil},
                     {template_engines,[]},
@@ -93,4 +93,4 @@
                     {serve_endpoints,false},
                     {gzippable_exts,[<<".js">>,<<".css">>,<<".txt">>,
                                      <<".text">>,<<".html">>,<<".json">>,
-                                     <<".svg">>,<<".eot">>,<<".ttf">>]}]}]}.
+                                     <<".svg">>]}]}]}.
