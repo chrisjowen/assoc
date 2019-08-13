@@ -1,4 +1,4 @@
-FROM elixir:1.7.4
+FROM elixir:1.7
 
 # Compile elixir files for production
 # ENV MIX_ENV prod
@@ -20,14 +20,14 @@ RUN mix deps.get
 RUN mix compile
 
 WORKDIR /app/assets
-
+RUN npm rebuild node-sass
 RUN npm install && npm run deploy
 
 EXPOSE 80
 EXPOSE 4000
 
 WORKDIR /app
-RUN mix compile && mix phx.digest
+RUN  mix compile && mix phx.digest
 
 
 CMD ["mix","phx.server"]

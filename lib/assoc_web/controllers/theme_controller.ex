@@ -20,7 +20,6 @@ defmodule AssocWeb.ThemeController do
     end
   end
 
-
   def index(conn, _params) do
     json(conn, Themes.get())
   end

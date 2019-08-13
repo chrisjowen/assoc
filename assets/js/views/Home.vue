@@ -124,9 +124,8 @@ export default {
         });
     },
     fileContent(theme) {
-      return [theme.word]
-        .concat(theme.words.map(t => t.toLowerCase()))
-        .join("\r\n");
+      let words = [theme.word].concat(theme.words.map(t => t.toLowerCase()));
+      return _.uniq(words).join("\r\n");
     },
     download() {
       let zip = new JSZip();
